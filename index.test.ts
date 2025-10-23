@@ -162,5 +162,11 @@ describe('fixMarkdownEmphasis', () => {
       const expected = '**ひめゆり平和祈念資料館の普天間朝佳館長**は「資料館のこれまでの展示や体験者の証言の中に、西田議員が言っていたような記述や表現は一切ない」と断言。';
       expect(fixMarkdownEmphasis(input)).toBe(expected);
     });
+
+    it('複数の斜体が連続している場合は全て修正される', () => {
+      const input = "第一項目*「内容1」*と第二項目*「内容2」*があります。";
+      const expected = "第一項目 *「内容1」* と第二項目 *「内容2」* があります。";
+      expect(fixMarkdownEmphasis(input)).toBe(expected);
+    });
   });
 });
