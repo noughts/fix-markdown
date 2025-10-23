@@ -1,6 +1,6 @@
 {
   "name": "markdown-fix",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Fix Markdown emphasis formatting by inserting spaces around markers containing brackets and special characters",
   "author": "koichi.yamamoto",
   "license": "MIT",
