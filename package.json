@@ -1,10 +1,26 @@
 {
   "name": "markdown-fix",
+  "version": "0.1.0",
+  "description": "Fix Markdown emphasis formatting by inserting spaces around markers containing brackets and special characters",
+  "author": "koichi.yamamoto",
+  "license": "MIT",
   "module": "index.ts",
   "type": "module",
+  "main": "index.ts",
+  "exports": {
+    ".": {
+      "import": "./index.ts"
+    }
+  },
   "scripts": {
     "test": "bun test"
   },
+  "keywords": [
+    "markdown",
+    "emphasis",
+    "formatter",
+    "llm"
+  ],
   "devDependencies": {
     "@types/bun": "latest"
   },
