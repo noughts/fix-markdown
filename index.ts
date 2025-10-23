@@ -46,8 +46,8 @@ export function fixMarkdownEmphasis(markdown: string): string {
       const hasClosingBracket = symbolsNeedingSpaceEnd.split('').some(bracket => innerText.includes(bracket));
 
       // 特殊文字（記号）かチェック
-      // 句読点や%などの特殊文字を検出
-      const specialCharPattern = /[%！？。、，；：！＠＃＄％＆＊（）]/;
+      // 句読点や%などの特殊文字を検出（全角・半角括弧、クォート含む）
+      const specialCharPattern = /[%！？。、，；：！＠＃＄％＆＊（）()"']/;
       const hasSpecialChar = specialCharPattern.test(innerText);
 
       // 前方にスペースが必要か

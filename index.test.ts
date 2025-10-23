@@ -144,5 +144,23 @@ describe('fixMarkdownEmphasis', () => {
       const expected = '精度は **100%** です。';
       expect(fixMarkdownEmphasis(input)).toBe(expected);
     });
+
+    it('括弧と数字を含む太字は修正される', () => {
+      const input = '私の名前は**田中(25)**です。';
+      const expected = '私の名前は **田中(25)** です。';
+      expect(fixMarkdownEmphasis(input)).toBe(expected);
+    });
+
+    it('ダブルクォートを含む太字は修正される', () => {
+      const input = '私の名前は**"田中"**です';
+      const expected = '私の名前は **"田中"** です';
+      expect(fixMarkdownEmphasis(input)).toBe(expected);
+    });
+
+    it('引用符で括られた太字は変更されない', () => {
+      const input = '**ひめゆり平和祈念資料館の普天間朝佳館長**は「資料館のこれまでの展示や体験者の証言の中に、西田議員が言っていたような記述や表現は一切ない」と断言。';
+      const expected = '**ひめゆり平和祈念資料館の普天間朝佳館長**は「資料館のこれまでの展示や体験者の証言の中に、西田議員が言っていたような記述や表現は一切ない」と断言。';
+      expect(fixMarkdownEmphasis(input)).toBe(expected);
+    });
   });
 });
