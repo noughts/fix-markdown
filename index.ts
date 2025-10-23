@@ -45,13 +45,18 @@ export function fixMarkdownEmphasis(markdown: string): string {
       const hasOpeningBracket = symbolsNeedingSpace.split('').some(bracket => innerText.includes(bracket));
       const hasClosingBracket = symbolsNeedingSpaceEnd.split('').some(bracket => innerText.includes(bracket));
 
+      // 特殊文字（記号）かチェック
+      // 句読点や%などの特殊文字を検出
+      const specialCharPattern = /[%！？。、，；：！＠＃＄％＆＊（）]/;
+      const hasSpecialChar = specialCharPattern.test(innerText);
+
       // 前方にスペースが必要か
-      // テキストが括弧で始まるか、括弧を含む場合
-      const needsSpaceBefore = symbolsNeedingSpace.includes(firstChar) || (hasOpeningBracket || hasClosingBracket);
+      // テキストが括弧で始まるか、括弧や特殊文字を含む場合
+      const needsSpaceBefore = symbolsNeedingSpace.includes(firstChar) || (hasOpeningBracket || hasClosingBracket || hasSpecialChar);
 
       // 後方にスペースが必要か
-      // テキストが括弧で終わるか、括弧を含む場合
-      const needsSpaceAfter = symbolsNeedingSpaceEnd.includes(lastChar) || (hasOpeningBracket || hasClosingBracket);
+      // テキストが括弧で終わるか、括弧や特殊文字を含む場合
+      const needsSpaceAfter = symbolsNeedingSpaceEnd.includes(lastChar) || (hasOpeningBracket || hasClosingBracket || hasSpecialChar);
 
       // スペースを挿入（マーカーの中にではなく、マーカーの前後に）
       let result = match;

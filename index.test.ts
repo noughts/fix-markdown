@@ -132,5 +132,17 @@ describe('fixMarkdownEmphasis', () => {
       const expected = ' **【「ネスト」】** です。';
       expect(fixMarkdownEmphasis(input)).toBe(expected);
     });
+
+    it('括弧の外側に強調マーカーがある場合は変更されない', () => {
+      const input = '僕は「**こんにちは**」と言った。';
+      const expected = '僕は「**こんにちは**」と言った。';
+      expect(fixMarkdownEmphasis(input)).toBe(expected);
+    });
+
+    it('数字を含む太字は修正される', () => {
+      const input = '精度は**100%**です。';
+      const expected = '精度は **100%** です。';
+      expect(fixMarkdownEmphasis(input)).toBe(expected);
+    });
   });
 });
