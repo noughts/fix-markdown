@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'bun:test';
+import { marked } from 'marked';
 import { fixMarkdown } from './index';
 
 describe('fixMarkdown', () => {
@@ -294,6 +295,110 @@ describe('fixMarkdown', () => {
 
       // インデントが保持されることを確認
       expect(input.match(/^(\s*)\*/)[1]).toBe(output.match(/^(\s*)\*/)[1]);
+    });
+
+    it('Markdownリンク付きの複数の箇条書きアイテムのインデントが正しく保持される', () => {
+      const input = `*   **[審査基準解説資料](https://help-ads.smartnews.com/item-7651/)**
+    *   SmartNews Adsの広告掲載基準の事例を交え、特に薬機法に関連した基本的な審査基準の考え方やNG事例が豊富に紹介されています。
+*   **[EC広告 医薬品・化粧品・健康食品商材の掲載基準と注意点](https://help-ads.smartnews.com/item-7649/)**
+    *   こちらも同様に、SmartNews Adsの広告掲載基準の事例を交え、薬機法に関連する審査基準の考え方やNG事例が紹介されており、資料のダウンロードが可能です。`;
+
+      const output = fixMarkdown(input);
+      const inputLines = input.split('\n');
+      const outputLines = output.split('\n');
+
+      // 各行について検証
+      for (let i = 0; i < inputLines.length; i++) {
+        const inputLine = inputLines[i];
+        const outputLine = outputLines[i];
+
+        if (inputLine.match(/^\s*\*\s+/)) {
+          // リストマーカーの位置を確認
+          const inputMatch = inputLine.match(/^(\s*)\*(\s+)/);
+          const outputMatch = outputLine.match(/^(\s*)\*(\s+)/);
+
+          expect(inputMatch[1].length).toBe(outputMatch[1].length); // インデント
+          expect(inputMatch[2].length).toBe(outputMatch[2].length); // アスタリスク後のスペース
+        }
+      }
+
+      // 入出力が完全に一致することを確認
+      expect(input).toBe(output);
+    });
+  });
+
+  describe('Markdownパーサーでの検証', () => {
+    it('修正されたMarkdownが有効なリスト構造としてパースされる', () => {
+      const input = `*   **[審査基準解説資料](https://help-ads.smartnews.com/item-7651/)**
+    *   SmartNews Adsの広告掲載基準の事例を交え、特に薬機法に関連した基本的な審査基準の考え方やNG事例が豊富に紹介されています。
+*   **[EC広告 医薬品・化粧品・健康食品商材の掲載基準と注意点](https://help-ads.smartnews.com/item-7649/)**
+    *   こちらも同様に、SmartNews Adsの広告掲載基準の事例を交え、薬機法に関連する審査基準の考え方やNG事例が紹介されており、資料のダウンロードが可能です。`;
+
+      const output = fixMarkdown(input);
+      const tokens = marked.lexer(output);
+
+      // リストトークンを抽出
+      const listTokens = tokens.filter((token: any) => token.type === 'list');
+
+      // リストが存在することを確認
+      expect(listTokens.length).toBeGreaterThan(0);
+
+      // 最初のリストを検査
+      const firstList = listTokens[0] as any;
+
+      // リストアイテムが正しく認識されていることを確認
+      expect(firstList.items.length).toBeGreaterThanOrEqual(2);
+
+      // ネストされたリストが存在することを確認
+      // marked では、ネストされたリストは item.tokens 配列の中に list トークンとして格納される
+      const itemsWithNestedLists = firstList.items.filter((item: any) =>
+        item.tokens && item.tokens.some((token: any) => token.type === 'list')
+      );
+      expect(itemsWithNestedLists.length).toBeGreaterThan(0);
+    });
+
+    it('リンク付きの太字がリスト内で正しく解釈される', () => {
+      const input = `*   **[リンクテキスト](https://example.com)**
+    *   サブアイテム`;
+
+      const output = fixMarkdown(input);
+      const html = marked(output);
+
+      // HTMLが生成されることを確認
+      expect(html).toBeDefined();
+      expect(html.length).toBeGreaterThan(0);
+
+      // リスト構造を含むことを確認
+      expect(html).toContain('<ul>');
+      expect(html).toContain('<li>');
+
+      // リンクが含まれることを確認
+      expect(html).toContain('<a href');
+      expect(html).toContain('リンクテキスト');
+    });
+
+    it('複雑なネストされたリストがパースされる', () => {
+      const input = `*   **[審査基準解説資料](https://help-ads.smartnews.com/item-7651/)**
+    *   SmartNews Adsの広告掲載基準の事例を交え、特に薬機法に関連した基本的な審査基準の考え方やNG事例が豊富に紹介されています。
+*   **[EC広告 医薬品・化粧品・健康食品商材の掲載基準と注意点](https://help-ads.smartnews.com/item-7649/)**
+    *   こちらも同様に、SmartNews Adsの広告掲載基準の事例を交え、薬機法に関連する審査基準の考え方やNG事例が紹介されており、資料のダウンロードが可能です。`;
+
+      const output = fixMarkdown(input);
+      const html = marked(output);
+
+      // 最上位のリストが1つであることを確認（<ul>は1つ）
+      const ulMatches = html.match(/<ul>/g);
+      expect(ulMatches?.length).toBeGreaterThanOrEqual(1);
+
+      // ネストされたリストが存在することを確認
+      expect(html).toContain('<ul>\n<li>');
+
+      // 複数のリストアイテムが存在することを確認
+      const liMatches = html.match(/<li>/g);
+      expect(liMatches?.length).toBeGreaterThanOrEqual(4); // 上位2つ + ネスト2つ以上
+
+      // リンクが含まれることを確認
+      expect(html.match(/<a href/g)?.length).toBeGreaterThanOrEqual(2);
     });
   });
 });

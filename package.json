@@ -28,7 +28,9 @@
     "llm"
   ],
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@types/marked": "^6.0.0",
+    "marked": "^16.4.1"
   },
   "peerDependencies": {
     "typescript": "^5"
