@@ -39,6 +39,12 @@ describe('fixMarkdown', () => {
       expect(fixMarkdown(input)).toBe(expected);
     });
 
+    it('全角角括弧を含む太字は前後にスペースが挿入される', () => {
+      const input = 'メールアドレスを記入し**［次へ］**ボタンを押すと、ワンタイムパスワードがメールで届きます。';
+      const expected = 'メールアドレスを記入し **［次へ］** ボタンを押すと、ワンタイムパスワードがメールで届きます。';
+      expect(fixMarkdown(input)).toBe(expected);
+    });
+
     it('通常のテキストは修正されない', () => {
       const input = '**通常のテキスト**です。';
       const expected = '**通常のテキスト**です。';
