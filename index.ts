@@ -6,7 +6,7 @@
  * @param markdown - 修正対象の Markdown 文字列
  * @returns 修正済みの Markdown 文字列
  */
-export function fixMarkdownEmphasis(markdown: string): string {
+export function fixMarkdown(markdown: string): string {
   let result = markdown;
 
   // URL を含む全角括弧を半角括弧に変換し、前後にスペースを挿入

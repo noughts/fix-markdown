@@ -25,10 +25,10 @@ This utility automatically fixes emphasis formatting by:
 ## Usage
 
 ```typescript
-import { fixMarkdownEmphasis } from 'fix-markdown';
+import { fixMarkdown } from 'fix-markdown';
 
 const input = '僕は**「こんにちは」**と言った。';
-const fixed = fixMarkdownEmphasis(input);
+const fixed = fixMarkdown(input);
 // Output: '僕は **「こんにちは」** と言った。'
 ```
 
