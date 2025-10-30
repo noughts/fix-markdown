@@ -19,6 +19,17 @@ export function fixMarkdownEmphasis(markdown: string): string {
     }
   );
 
+  // URL を含む半角括弧の前後にスペースを挿入
+  // スペースの有無を正規化する
+  // ただし、Markdownリンク記法 [テキスト](URL) は除外
+  result = result.replace(
+    /(?<!\])\s*\(\s*(https?:\/\/[^)\s]+)\s*\)\s*/g,
+    (match, url) => {
+      // 前後のスペースを1つに正規化
+      return ` (${url}) `;
+    }
+  );
+
   // 強調パターンのリスト: 太字(** と __)を先に処理
   const emphasisPatterns = [
     {

@@ -206,5 +206,41 @@ describe('fixMarkdownEmphasis', () => {
       const expected = "ポータル (http://example.com) にアクセス";
       expect(fixMarkdownEmphasis(input)).toBe(expected);
     });
+
+    it('半角括弧で囲まれたURLの前後にスペースを挿入', () => {
+      const input = '公式サポート(https://smartnews-ads.zendesk.com/hc/ja/requests/new)までお問い合わせください。';
+      const expected = '公式サポート (https://smartnews-ads.zendesk.com/hc/ja/requests/new) までお問い合わせください。';
+      expect(fixMarkdownEmphasis(input)).toBe(expected);
+    });
+
+    it('複数の半角括弧URLを変換', () => {
+      const input = "リンクA(https://a.com)とリンクB(https://b.com)です";
+      const expected = "リンクA (https://a.com) とリンクB (https://b.com) です";
+      expect(fixMarkdownEmphasis(input)).toBe(expected);
+    });
+
+    it('半角括弧URLの既存スペースを正規化', () => {
+      const input = "サイト ( https://example.com ) です";
+      const expected = "サイト (https://example.com) です";
+      expect(fixMarkdownEmphasis(input)).toBe(expected);
+    });
+
+    it('Markdownリンク記法の括弧は変更されない', () => {
+      const input = '詳しくは[ヘルプページ](http://example.com)をご覧ください。';
+      const expected = '詳しくは[ヘルプページ](http://example.com)をご覧ください。';
+      expect(fixMarkdownEmphasis(input)).toBe(expected);
+    });
+
+    it('複数のMarkdownリンクを含むテキストは変更されない', () => {
+      const input = '[リンク1](http://a.com)と[リンク2](https://b.com)です';
+      const expected = '[リンク1](http://a.com)と[リンク2](https://b.com)です';
+      expect(fixMarkdownEmphasis(input)).toBe(expected);
+    });
+
+    it('Markdownリンクと単独の括弧URLが混在する場合', () => {
+      const input = '[ヘルプ](http://help.com)と情報(https://info.com)です';
+      const expected = '[ヘルプ](http://help.com)と情報 (https://info.com) です';
+      expect(fixMarkdownEmphasis(input)).toBe(expected);
+    });
   });
 });
