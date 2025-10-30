@@ -33,6 +33,12 @@ describe('fixMarkdownEmphasis', () => {
       expect(fixMarkdownEmphasis(input)).toBe(expected);
     });
 
+    it('半角角括弧を含む太字は前後にスペースが挿入される', () => {
+      const input = 'サイト右上にある**[アカウント開設]**を押下します。';
+      const expected = 'サイト右上にある **[アカウント開設]** を押下します。';
+      expect(fixMarkdownEmphasis(input)).toBe(expected);
+    });
+
     it('通常のテキストは修正されない', () => {
       const input = '**通常のテキスト**です。';
       const expected = '**通常のテキスト**です。';

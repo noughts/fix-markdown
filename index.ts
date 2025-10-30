@@ -14,10 +14,6 @@ export function fixMarkdownEmphasis(markdown: string): string {
   result = result.replace(
     /\s*（\s*(https?:\/\/[^）]+)\s*）\s*/g,
     (match, url) => {
-      // 前の文字がスペース以外か確認して、スペースを正しく配置
-      const beforeMatch = match.match(/^(\s*)/)[1];
-      const afterMatch = match.match(/(\s*)$/)[1];
-
       // 前後のスペースを1つに正規化
       return ` (${url}) `;
     }
@@ -62,7 +58,7 @@ export function fixMarkdownEmphasis(markdown: string): string {
 
       // 特殊文字（記号）かチェック
       // 句読点や%などの特殊文字を検出（全角・半角括弧、クォート含む）
-      const specialCharPattern = /[%！？。、，；：！＠＃＄％＆＊（）()"']/;
+      const specialCharPattern = /[%！？。、，；：！＠＃＄％＆＊（）()"'\[\]]/;
       const hasSpecialChar = specialCharPattern.test(innerText);
 
       // 前方にスペースが必要か
