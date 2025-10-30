@@ -243,4 +243,51 @@ describe('fixMarkdown', () => {
       expect(fixMarkdown(input)).toBe(expected);
     });
   });
+
+  describe('箇条書きのインデント保持', () => {
+    it('インデント付きの箇条書きのアスタリスク位置が保持される', () => {
+      const input = `SmartNews Adsでは、主に以下の広告フォーマットが利用可能です。
+
+*   **Large Unit**
+    *   **ブランド認知キャンペーン**目的の、視認領域の大きな広告フォーマットです。
+    *   動画および静止画広告で利用でき、従来よりも大きな視認領域を提供し、ユーザーの注目を効果的に集めます。
+
+*   **カルーセル広告（Story creative）**
+    *   **静止画のみ**に対応しており、クリエイティブをスクロールさせることでストーリー性を持たせた訴求が可能です。`;
+
+      const output = fixMarkdown(input);
+      const inputLines = input.split('\n');
+      const outputLines = output.split('\n');
+
+      // インデントと箇条書き記号が保持されることを確認
+      for (let i = 0; i < inputLines.length; i++) {
+        const inputLine = inputLines[i];
+        const outputLine = outputLines[i];
+
+        // 箇条書き行であれば、インデントと * の位置が保持されることを確認
+        if (inputLine.match(/^\s*\*\s+/)) {
+          // インデントの検出
+          const inputIndent = inputLine.match(/^(\s*)\*/)[1].length;
+          const outputIndent = outputLine.match(/^(\s*)\*/)[1].length;
+          expect(inputIndent).toBe(outputIndent);
+        }
+      }
+    });
+
+    it('括弧を含む太字が行頭のインデントに影響を与えない', () => {
+      const input = '*   **カルーセル広告（Story creative）**';
+      const output = fixMarkdown(input);
+
+      // 入力と出力の行全体が一致することを確認（アスタリスクの位置と後続のスペースを保持）
+      expect(input).toBe(output);
+    });
+
+    it('複数の括弧を含む太字が行頭のインデントに影響を与えない', () => {
+      const input = '    *   **カルーセル広告（Story creative）**';
+      const output = fixMarkdown(input);
+
+      // インデントが保持されることを確認
+      expect(input.match(/^(\s*)\*/)[1]).toBe(output.match(/^(\s*)\*/)[1]);
+    });
+  });
 });
