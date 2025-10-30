@@ -1,11 +1,28 @@
 /**
  * Markdown の強調タグを修正する関数
  * 鉤括弧などの記号を含む強調表現の前後に半角スペースを挿入します
+ * また、URL を含む全角括弧を半角括弧に変換します
  *
  * @param markdown - 修正対象の Markdown 文字列
  * @returns 修正済みの Markdown 文字列
  */
 export function fixMarkdownEmphasis(markdown: string): string {
+  let result = markdown;
+
+  // URL を含む全角括弧を半角括弧に変換し、前後にスペースを挿入
+  // スペースの有無を正規化する
+  result = result.replace(
+    /\s*（\s*(https?:\/\/[^）]+)\s*）\s*/g,
+    (match, url) => {
+      // 前の文字がスペース以外か確認して、スペースを正しく配置
+      const beforeMatch = match.match(/^(\s*)/)[1];
+      const afterMatch = match.match(/(\s*)$/)[1];
+
+      // 前後のスペースを1つに正規化
+      return ` (${url}) `;
+    }
+  );
+
   // 強調パターンのリスト: 太字(** と __)を先に処理
   const emphasisPatterns = [
     {
@@ -25,8 +42,6 @@ export function fixMarkdownEmphasis(markdown: string): string {
       regex: /(?<!_)_(?!_)([^_]+?)_(?!_)/g,
     },
   ];
-
-  let result = markdown;
 
   for (const pattern of emphasisPatterns) {
     result = result.replace(pattern.regex, (match, innerText) => {

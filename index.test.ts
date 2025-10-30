@@ -169,4 +169,36 @@ describe('fixMarkdownEmphasis', () => {
       expect(fixMarkdownEmphasis(input)).toBe(expected);
     });
   });
+
+  describe('全角括弧とURLの修正', () => {
+    it('全角括弧で囲まれたURLを半角括弧に変換し、前後にスペースを挿入', () => {
+      const input = "トップログインページ（https://ads.smartnews.com/login）から「確認コードでログイン」を選択し、メールアドレスに送信されるワンタイムパスワードを入力してログインします。";
+      const expected = "トップログインページ (https://ads.smartnews.com/login) から「確認コードでログイン」を選択し、メールアドレスに送信されるワンタイムパスワードを入力してログインします。";
+      expect(fixMarkdownEmphasis(input)).toBe(expected);
+    });
+
+    it('URL以外の全角括弧は変換しない', () => {
+      const input = "これは（注釈です）テキスト";
+      const expected = "これは（注釈です）テキスト";
+      expect(fixMarkdownEmphasis(input)).toBe(expected);
+    });
+
+    it('既にスペースがある場合も正規化する', () => {
+      const input = "ページ （https://example.com） から";
+      const expected = "ページ (https://example.com) から";
+      expect(fixMarkdownEmphasis(input)).toBe(expected);
+    });
+
+    it('複数のURL付き全角括弧を変換', () => {
+      const input = "サイトA（https://a.com）とサイトB（https://b.com）です";
+      const expected = "サイトA (https://a.com) とサイトB (https://b.com) です";
+      expect(fixMarkdownEmphasis(input)).toBe(expected);
+    });
+
+    it('http:// で始まるURLも変換する', () => {
+      const input = "ポータル（http://example.com）にアクセス";
+      const expected = "ポータル (http://example.com) にアクセス";
+      expect(fixMarkdownEmphasis(input)).toBe(expected);
+    });
+  });
 });
