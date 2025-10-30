@@ -1,4 +1,4 @@
-# markdown-fix
+# fix-markdown
 
 Fix Markdown emphasis formatting by inserting spaces around markers containing brackets and special characters.
 
@@ -25,7 +25,7 @@ This utility automatically fixes emphasis formatting by:
 ## Usage
 
 ```typescript
-import { fixMarkdownEmphasis } from 'markdown-fix';
+import { fixMarkdownEmphasis } from 'fix-markdown';
 
 const input = '僕は**「こんにちは」**と言った。';
 const fixed = fixMarkdownEmphasis(input);
