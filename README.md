@@ -1,26 +1,26 @@
 # fix-markdown
 
-Fix Markdown emphasis formatting by inserting spaces around markers containing brackets and special characters.
+**Say goodbye to broken asterisks in Markdown.**
+
+fix-markdown emphasis formatting by inserting spaces around markers containing brackets and special characters.
 
 ## Problem
 
-LLMs often output invalid Markdown emphasis when using Japanese brackets:
+When you write `僕は**「こんにちは」**と言った。`, it should render as:
 
-```markdown
-僕は**「こんにちは」**と言った。
-```
+> 僕は<b>「こんにちは」</b>と言った。
 
-This should be:
+But most Markdown parsers fail to parse the emphasis, rendering it literally as:
 
-```markdown
-僕は **「こんにちは」** と言った。
-```
+> 僕は\*\*「こんにちは」\*\*と言った。
+
+This is due to the [CommonMark spec](https://spec.commonmark.org/0.31.2/#emphasis-and-strong-emphasis) — characters like `「」（）` are classified as Unicode punctuation, which breaks the delimiter run detection rules. Fixing this at the spec level would be costly and unrealistic.
 
 ## Solution
 
-This utility automatically fixes emphasis formatting by:
-- Detecting brackets (`「」『』（）【】`) and special characters (`%!?。、` etc.) within emphasis markers
-- Inserting half-width spaces around the markers
+Since changing the CommonMark spec is not practical, this utility takes a pragmatic workaround: insert spaces around emphasis markers so that parsers can recognize them correctly.
+
+This means extra spaces will appear in the output (e.g. `僕は **「こんにちは」** と言った。`), but visible spaces are far better than raw asterisks leaking into the rendered text.
 
 ## Usage
 
@@ -36,19 +36,3 @@ const fixed = fixMarkdown(input);
 
 - Bold: `**text**`, `__text__`
 - Italic: `*text*`, `_text_`
-
-## Development
-
-Install dependencies:
-
-```bash
-bun install
-```
-
-Run tests:
-
-```bash
-bun test
-```
-
-All 22 tests pass ✅
