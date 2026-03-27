@@ -274,9 +274,13 @@ describe('fixMarkdown', () => {
         // 箇条書き行であれば、インデントと * の位置が保持されることを確認
         if (inputLine.match(/^\s*\*\s+/)) {
           // インデントの検出
-          const inputIndent = inputLine.match(/^(\s*)\*/)[1].length;
-          const outputIndent = outputLine.match(/^(\s*)\*/)[1].length;
-          expect(inputIndent).toBe(outputIndent);
+          const inputMatch = inputLine.match(/^(\s*)\*/);
+          const outputMatch = outputLine.match(/^(\s*)\*/);
+          expect(inputMatch).not.toBeNull();
+          expect(outputMatch).not.toBeNull();
+          if (inputMatch && outputMatch) {
+            expect(inputMatch[1].length).toBe(outputMatch[1].length);
+          }
         }
       }
     });
@@ -294,7 +298,13 @@ describe('fixMarkdown', () => {
       const output = fixMarkdown(input);
 
       // インデントが保持されることを確認
-      expect(input.match(/^(\s*)\*/)[1]).toBe(output.match(/^(\s*)\*/)[1]);
+      const inputMatch = input.match(/^(\s*)\*/);
+      const outputMatch = output.match(/^(\s*)\*/);
+      expect(inputMatch).not.toBeNull();
+      expect(outputMatch).not.toBeNull();
+      if (inputMatch && outputMatch) {
+        expect(inputMatch[1]).toBe(outputMatch[1]);
+      }
     });
 
     it('Markdownリンク付きの複数の箇条書きアイテムのインデントが正しく保持される', () => {
@@ -316,9 +326,13 @@ describe('fixMarkdown', () => {
           // リストマーカーの位置を確認
           const inputMatch = inputLine.match(/^(\s*)\*(\s+)/);
           const outputMatch = outputLine.match(/^(\s*)\*(\s+)/);
+          expect(inputMatch).not.toBeNull();
+          expect(outputMatch).not.toBeNull();
 
-          expect(inputMatch[1].length).toBe(outputMatch[1].length); // インデント
-          expect(inputMatch[2].length).toBe(outputMatch[2].length); // アスタリスク後のスペース
+          if (inputMatch && outputMatch) {
+            expect(inputMatch[1].length).toBe(outputMatch[1].length); // インデント
+            expect(inputMatch[2].length).toBe(outputMatch[2].length); // アスタリスク後のスペース
+          }
         }
       }
 
@@ -362,7 +376,7 @@ describe('fixMarkdown', () => {
     *   サブアイテム`;
 
       const output = fixMarkdown(input);
-      const html = marked(output);
+      const html = marked.parse(output, { async: false });
 
       // HTMLが生成されることを確認
       expect(html).toBeDefined();
@@ -384,7 +398,7 @@ describe('fixMarkdown', () => {
     *   こちらも同様に、SmartNews Adsの広告掲載基準の事例を交え、薬機法に関連する審査基準の考え方やNG事例が紹介されており、資料のダウンロードが可能です。`;
 
       const output = fixMarkdown(input);
-      const html = marked(output);
+      const html = marked.parse(output, { async: false });
 
       // 最上位のリストが1つであることを確認（<ul>は1つ）
       const ulMatches = html.match(/<ul>/g);
