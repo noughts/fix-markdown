@@ -30,7 +30,7 @@ function processEmphasisInText(text: string, isListItemContent: boolean = false)
   let result = text;
 
   for (const pattern of emphasisPatterns) {
-    result = result.replace(pattern.regex, (match, innerText) => {
+    result = result.replace(pattern.regex, (match, innerText, offset, source) => {
       // マーカーを抽出
       const marker = pattern.marker;
 
@@ -66,12 +66,16 @@ function processEmphasisInText(text: string, isListItemContent: boolean = false)
         needsSpaceAfter = false;
       }
 
+      // 既にスペースがある場合は追加しない
+      const charBefore = offset > 0 ? source[offset - 1] : '';
+      const charAfter = source[offset + match.length] ?? '';
+
       // スペースを挿入（マーカーの中にではなく、マーカーの前後に）
       let result = match;
-      if (needsSpaceAfter) {
+      if (needsSpaceAfter && charAfter !== ' ') {
         result = result + ' ';
       }
-      if (needsSpaceBefore) {
+      if (needsSpaceBefore && charBefore !== ' ') {
         result = ' ' + result;
       }
 

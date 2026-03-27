@@ -52,9 +52,9 @@ describe('fixMarkdown', () => {
       expect(fixMarkdown(input)).toBe(expected);
     });
 
-    it('スペースが既にある場合は修正される', () => {
+    it('スペースが既にある場合は追加されない', () => {
       const input = '既に **「正しい」** 形式です。';
-      const expected = '既に  **「正しい」**  形式です。';
+      const expected = '既に **「正しい」** 形式です。';
       expect(fixMarkdown(input)).toBe(expected);
     });
   });
@@ -136,7 +136,7 @@ describe('fixMarkdown', () => {
 
     it('連続する太字と斜体は正しく処理される', () => {
       const input = 'テキスト**「太字」***「斜体」*です。';
-      const expected = 'テキスト **「太字」**  *「斜体」* です。';
+      const expected = 'テキスト **「太字」** *「斜体」* です。';
       expect(fixMarkdown(input)).toBe(expected);
     });
 
