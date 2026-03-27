@@ -75,7 +75,7 @@ function processEmphasisInText(text: string, isListItemContent: boolean = false)
       if (needsSpaceAfter && charAfter !== ' ') {
         result = result + ' ';
       }
-      if (needsSpaceBefore && charBefore !== ' ') {
+      if (needsSpaceBefore && charBefore !== ' ' && charBefore !== '') {
         result = ' ' + result;
       }
 

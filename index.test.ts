@@ -46,6 +46,12 @@ describe('fixMarkdown', () => {
       expect(fixMarkdown(input)).toBe(expected);
     });
 
+    it('半角丸括弧を含む太字は後方にスペースが挿入される', () => {
+      const input = '**企業内部（何を持っているか）**を重視';
+      const expected = '**企業内部（何を持っているか）** を重視';
+      expect(fixMarkdown(input)).toBe(expected);
+    });
+
     it('通常のテキストは修正されない', () => {
       const input = '**通常のテキスト**です。';
       const expected = '**通常のテキスト**です。';
@@ -142,7 +148,7 @@ describe('fixMarkdown', () => {
 
     it('複雑なネストされた括弧は処理される', () => {
       const input = '**【「ネスト」】**です。';
-      const expected = ' **【「ネスト」】** です。';
+      const expected = '**【「ネスト」】** です。';
       expect(fixMarkdown(input)).toBe(expected);
     });
 
